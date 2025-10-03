@@ -1,0 +1,26 @@
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar stays fixed on the left */
+.app-layout .sidebar {
+  width: 250px;
+  flex-shrink: 0;
+}
+
+/* Main content (courses, etc.) */
+.app-layout .main-content {
+  flex-grow: 1;
+  padding: 30px;
+  background: #0d0f25; /* background like your course cards */
+  overflow-y: auto;
+}
+
+/* Course cards container */
+.course-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
+}

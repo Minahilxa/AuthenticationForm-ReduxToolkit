@@ -5,6 +5,8 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
+import ReactModal from "react-modal";
+ReactModal.setAppElement("#root"); // ✅ for accessibility
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>

@@ -1,72 +1,106 @@
-// src/features/auth/AuthForm.jsx
-import React, { useState } from "react"; // React and useState hook
-import { useSelector, useDispatch } from "react-redux"; // Redux hooks useSelector (to read data from the Redux store) and useDispatch (to send actions to the Redux store).
-import { login, signup, toggleForm } from "./authSlice"; // Import actions
+// src/features/auth/AuthForm.js
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { loginUser, registerUser, toggleForm } from "./authSlice";
+import Popup from "../../components/Popup";
+import styles from "./AuthForm.module.css";
 
 export default function AuthForm() {
-  // Access state from Redux (checking the state of form)
-  const { showLogin } = useSelector((state) => state.auth); 
-  // Get dispatch function This function will be called later to send actions to the Reducer.
+  const { showLogin, loading, error, isAuthenticated, user } = useSelector(
+    (state) => state.auth
+  );
   const dispatch = useDispatch();
 
-  // Local state for form inputs
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    pfp: "",
+  });
 
-  // Function runs when form is submitted
+  const [popup, setPopup] = useState({ message: null, type: null });
+
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault();
     if (showLogin) {
-      // If login form is shown
-      dispatch(login({ email: formData.email })); // Dispatch login action
+      dispatch(loginUser({ email: formData.email, password: formData.password }))
+        .unwrap()
+        .catch((msg) => setPopup({ message: msg, type: "error" }));
     } else {
-      // If register form is shown
-      dispatch(signup({ name: formData.name, email: formData.email })); // Dispatch signup action
+      dispatch(registerUser(formData))
+        .unwrap()
+        .catch((msg) => setPopup({ message: msg, type: "error" }));
     }
-    // Clear form after submit
-    setFormData({ name: "", email: "", password: "" });
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "auto", border: "1px solid #ddd", padding: "20px", borderRadius: "8px" }}>
-      {/* Heading changes depending on form */}
-      <h2>{showLogin ? "Login" : "Register"}</h2>
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <h2 className={styles.heading}>{showLogin ? "Login" : "Register"}</h2>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit}>
-        {/* Name field only visible when registering */}
-        {!showLogin && (
+        <Popup
+          message={popup.message || error}
+          type="error"
+          onClose={() => setPopup({ message: null, type: null })}
+        />
+
+        <form onSubmit={handleSubmit} className={styles.form}>
+          {!showLogin && (
+            <>
+              <input
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className={styles.input}
+              />
+              <input
+                type="text"
+                name="pfp"
+                placeholder="Profile Picture URL"
+                value={formData.pfp}
+                onChange={handleChange}
+                className={styles.input}
+              />
+            </>
+          )}
           <input
-            type="text"
-            placeholder="Name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
             required
+            className={styles.input}
           />
-        )}
-        {/* Email input */}
-        <input
-          type="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          required
-        />
-        {/* Password input */}
-        <input
-          type="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          required
-        />
-        {/* Submit button */}
-        <button type="submit">{showLogin ? "Login" : "Register"}</button>
-      </form>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className={styles.input}
+          />
 
-      {/* Toggle between login/register */}
-      <p style={{ marginTop: "10px", cursor: "pointer", color: "blue" }} onClick={() => dispatch(toggleForm())}>
-        {showLogin ? "Don't have an account? Register" : "Already have an account? Login"}
-      </p>
+          <button type="submit" disabled={loading} className={styles.button}>
+            {loading ? "Please wait..." : showLogin ? "Login" : "Register"}
+          </button>
+        </form>
+
+        <button onClick={() => dispatch(toggleForm())} className={styles.toggleBtn}>
+          {showLogin ? "Need an account? Register" : "Already have an account? Login"}
+        </button>
+
+        {isAuthenticated && (
+          <p className={styles.welcome}>Welcome, {user?.name} 🎉</p>
+        )}
+      </div>
     </div>
   );
 }
