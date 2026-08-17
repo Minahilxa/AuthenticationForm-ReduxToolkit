@@ -1,4 +1,3 @@
-// src/components/NewCourseModal.jsx
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createCourse } from "../features/courses/coursesSlice";
@@ -16,7 +15,7 @@ export default function NewCourseModal() {
     image: "",
   });
 
-  if (!isOpen) return null; // don’t render if closed
+  if (!isOpen) return null; 
 
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -24,8 +23,6 @@ const handleSubmit = async (e) => {
   try {
     const token = Cookies.get("token");
     console.log("Token from cookies:", token);
-
-    // ✅ dispatch with form data instead of hardcoded values
     await dispatch(createCourse(form)).unwrap();
 
     console.log("Course created successfully");
