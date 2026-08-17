@@ -1,4 +1,3 @@
-// src/app/store.js
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/auth/authSlice";
 import courseReducer from "../features/courses/coursesSlice";
@@ -9,6 +8,5 @@ export const store = configureStore({
     auth: authReducer,
     courses: courseReducer,
         ui: uiReducer,
-
   },
 });
