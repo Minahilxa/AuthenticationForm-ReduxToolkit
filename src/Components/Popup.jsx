@@ -1,4 +1,3 @@
-// src/components/Popup.js
 import React from "react";
 
 export default function Popup({ message, type, onClose }) {
